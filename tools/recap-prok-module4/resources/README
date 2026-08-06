@@ -1,0 +1,17 @@
+### Database Resources
+
+This tool relies on several external annotation resources that are updated periodically.
+
+The current versions included in this repository were downloaded in *August 2026*:
+
+- go-basic.obo
+- kegg_pathway_titles.tsv
+- pfam_duf_map.tsv
+
+Before using this tool for new analyses, we recommend checking whether newer versions of these resources are available.
+
+## Official Sources
+
+- [Gene_Ontology_(GO)](https://geneontology.org/docs/download-ontology/)
+- [KEGG_Pathway](https://www.kegg.jp/kegg/pathway.html#global)
+- [Pfam_InterPro](https://www.ebi.ac.uk/interpro/)
