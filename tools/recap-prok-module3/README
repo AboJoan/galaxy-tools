@@ -1,0 +1,20 @@
+### Module 3 — Selection of the final CDS sets
+
+Galaxy wrapper for the structural CDS interpretation module of RECAP-PROK.
+
+## Components
+
+- Galaxy XML wrapper
+- Snakemake execution
+- CDS classification and interpretation
+- GenBank export preparation
+
+## Input
+
+Genome annotation files (GFF/FASTA/GenBank)
+
+## Output
+
+- CDS comparison tables
+- Structural classification results
+- Module 4 preparation files
