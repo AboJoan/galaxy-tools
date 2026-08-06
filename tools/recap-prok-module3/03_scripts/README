@@ -1,0 +1,16 @@
+## Genome naming and metadata
+
+The current version of RECAP-PROK Module 3 includes predefined genome names corresponding to the bacterial and plasmid genomes used in the original case study dataset.
+
+These names are stored in the GENOME_NAMES metadata section of the CDS mapping interpretation script and are used only for:
+
+- output table descriptions
+- figure labels
+- visualization purposes
+
+The genome names are not used for CDS mapping, Liftoff annotation transfer, CDS classification, or any numerical calculation.
+
+For applying this workflow to a different bacterial community or genome set, the metadata labels should be adapted to match the user's own genome identifiers.
+This can be done by updating the genome metadata section before running the workflow.
+
+The input genome files should be provided according to the Galaxy tool input requirements. Users do not need to modify the analysis scripts for the original case study dataset.
