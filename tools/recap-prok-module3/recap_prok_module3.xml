@@ -1,0 +1,349 @@
+<tool id="recap_prok_module3" name="RECAP-PROK Module 3" version="0.1.0">
+
+    <description>
+        Liftoff mapping, CDS classification, and Module 4 input preparation
+    </description>
+
+    <requirements>
+        <requirement type="package">snakemake</requirement>
+        <requirement type="package">liftoff</requirement>
+        <requirement type="package">pandas</requirement>
+        <requirement type="package">matplotlib-base</requirement>
+        <requirement type="package">r-base</requirement>
+        <requirement type="package">seqkit</requirement>
+        <requirement type="package">bedtools</requirement>
+        <requirement type="package">r-base</requirement> 
+    </requirements>
+
+
+    <command detect_errors="exit_code"><![CDATA[
+
+set -euo pipefail;
+
+
+mkdir -p '00_input/01_re-annotation_genomes/01_bacterial_genomes/02_mapping' '00_input/01_re-annotation_genomes/02_plasmid_sequences' '00_input/02_reference_NCBI_genomes/01_bacterial_genomes/02_mapping' '00_input/02_reference_NCBI_genomes/02_plasmid_sequences' '00_input/03_extrnal_files_for_M4/01_bacterial/01_GenBank' '00_input/03_extrnal_files_for_M4/01_bacterial/02_cds' '00_input/03_extrnal_files_for_M4/01_bacterial/03_Protein_genes' '00_input/03_extrnal_files_for_M4/02_plasmids/01_GenBank' '00_input/03_extrnal_files_for_M4/02_plasmids/02_cds' '00_input/03_extrnal_files_for_M4/02_plasmids/03_Protein_genes';
+
+
+
+#for $f in $reannotation.bacterial_fna
+mkdir -p '00_input/01_re-annotation_genomes/01_bacterial_genomes/02_mapping'; cp -L '$f' '00_input/01_re-annotation_genomes/01_bacterial_genomes/02_mapping/${f.element_identifier}.fna';
+#end for
+
+
+#for $f in $reannotation.bacterial_gff
+mkdir -p '00_input/01_re-annotation_genomes/01_bacterial_genomes/02_mapping'; cp -L '$f' '00_input/01_re-annotation_genomes/01_bacterial_genomes/02_mapping/${f.element_identifier}.gff';
+#end for
+
+
+#if $reannotation.plasmid_fna
+#for $f in $reannotation.plasmid_fna
+mkdir -p '00_input/01_re-annotation_genomes/02_plasmid_sequences'; cp -L '$f' '00_input/01_re-annotation_genomes/02_plasmid_sequences/${f.element_identifier}.fna';
+#end for
+#end if
+
+
+
+#if $reannotation.plasmid_gff
+#for $f in $reannotation.plasmid_gff
+mkdir -p '00_input/01_re-annotation_genomes/02_plasmid_sequences'; cp -L '$f' '00_input/01_re-annotation_genomes/02_plasmid_sequences/${f.element_identifier}.gff';
+#end for
+#end if
+
+
+
+
+#for $f in $reference.bacterial_fna
+mkdir -p '00_input/02_reference_NCBI_genomes/01_bacterial_genomes/02_mapping'; cp -L '$f' '00_input/02_reference_NCBI_genomes/01_bacterial_genomes/02_mapping/${f.element_identifier}.fna';
+#end for
+
+
+#for $f in $reference.bacterial_gff
+mkdir -p '00_input/02_reference_NCBI_genomes/01_bacterial_genomes/02_mapping'; cp -L '$f' '00_input/02_reference_NCBI_genomes/01_bacterial_genomes/02_mapping/${f.element_identifier}.gff';
+#end for
+
+
+
+
+#if $reference.plasmid_fna
+#for $f in $reference.plasmid_fna
+mkdir -p '00_input/02_reference_NCBI_genomes/02_plasmid_sequences'; cp -L '$f' '00_input/02_reference_NCBI_genomes/02_plasmid_sequences/${f.element_identifier}.fna';
+#end for
+#end if
+
+
+#if $reference.plasmid_gff
+#for $f in $reference.plasmid_gff
+mkdir -p '00_input/02_reference_NCBI_genomes/02_plasmid_sequences'; cp -L '$f' '00_input/02_reference_NCBI_genomes/02_plasmid_sequences/${f.element_identifier}.gff';
+#end for
+#end if
+
+
+#for $f in $module4_inputs.bacterial_genbank
+mkdir -p '00_input/03_extrnal_files_for_M4/01_bacterial/01_GenBank'; cp -L '$f' '00_input/03_extrnal_files_for_M4/01_bacterial/01_GenBank/${f.element_identifier}.gb';
+#end for
+
+
+#for $f in $module4_inputs.bacterial_cds
+mkdir -p '00_input/03_extrnal_files_for_M4/01_bacterial/02_cds'; cp -L '$f' '00_input/03_extrnal_files_for_M4/01_bacterial/02_cds/${f.element_identifier}.fna';
+#end for
+
+
+#for $f in $module4_inputs.bacterial_faa
+mkdir -p '00_input/03_extrnal_files_for_M4/01_bacterial/03_Protein_genes'; cp -L '$f' '00_input/03_extrnal_files_for_M4/01_bacterial/03_Protein_genes/${f.element_identifier}.faa';
+#end for
+
+
+#if $module4_inputs.plasmid_genbank
+#for $f in $module4_inputs.plasmid_genbank
+mkdir -p '00_input/03_extrnal_files_for_M4/02_plasmids/01_GenBank'; cp -L '$f' '00_input/03_extrnal_files_for_M4/02_plasmids/01_GenBank/${f.element_identifier}.gb';
+#end for
+#end if
+
+
+#if $module4_inputs.plasmid_cds
+#for $f in $module4_inputs.plasmid_cds
+mkdir -p '00_input/03_extrnal_files_for_M4/02_plasmids/02_cds'; cp -L '$f' '00_input/03_extrnal_files_for_M4/02_plasmids/02_cds/${f.element_identifier}.fna';
+#end for
+#end if
+
+
+#if $module4_inputs.plasmid_faa
+#for $f in $module4_inputs.plasmid_faa
+mkdir -p '00_input/03_extrnal_files_for_M4/02_plasmids/03_Protein_genes'; cp -L '$f' '00_input/03_extrnal_files_for_M4/02_plasmids/03_Protein_genes/${f.element_identifier}.faa';
+#end for
+#end if
+
+
+
+cp -r '$__tool_directory__/03_scripts' .;
+cp '$__tool_directory__/Snakefile' .;
+cp '$__tool_directory__/Snakefile.cds_interpretation' .;
+cp '$__tool_directory__/Snakefile.export_M4' .;
+
+
+snakemake --snakefile Snakefile --cores '$threads' --use-conda --printshellcmds --rerun-incomplete all;
+snakemake --snakefile Snakefile.export_M4 --cores '$threads' --use-conda --printshellcmds --rerun-incomplete all;
+test -s '04_results/01_final_tables/module3_bacterial_summary.tsv';
+test -s '04_results/01_final_tables/module3_plasmid_summary.tsv';
+test -s '04_results/01_final_tables/CDS_mapping_summary_NCBI_reference_vs_Prodigal_reannotation.tsv';
+test -s '04_results/01_final_tables/module3_legend.txt';
+
+test -s '04_results/02_figures/03_cds_mapping_interpretation/Figure_1A_bacterial_chromosomes_NCBI_vs_Prodigal_CDS_mapping.png';
+test -s '04_results/02_figures/03_cds_mapping_interpretation/Figure_1B_plasmids_NCBI_vs_Prodigal_CDS_mapping.png';
+test -s '04_results/02_figures/03_cds_mapping_interpretation/Figure_2A_bacterial_chromosomes_mean_CDS_length_change.png';
+test -s '04_results/02_figures/03_cds_mapping_interpretation/Figure_2B_plasmids_mean_CDS_length_change.png';
+
+test -s '00_input/04_module4_ready_inputs/module4_ready_manifest.tsv';
+tar -czf 'module4_ready_inputs.tar.gz' -C '00_input' '04_module4_ready_inputs';
+test -s 'module4_ready_inputs.tar.gz';
+
+]]></command>
+
+
+<inputs>
+
+
+<section name="reannotation" title="Re-annotated genome inputs">
+
+
+<param name="bacterial_fna"
+type="data_collection"
+collection_type="list"
+format="fasta"
+label="Bacterial Prodigal FNA files"/>
+
+
+<param name="bacterial_gff"
+type="data_collection"
+collection_type="list"
+format="gff"
+label="Bacterial Prodigal GFF files"/>
+
+
+<param name="plasmid_fna"
+type="data_collection"
+collection_type="list"
+format="fasta"
+
+label="Plasmid Prodigal FNA files"/>
+
+
+<param name="plasmid_gff"
+type="data_collection"
+collection_type="list"
+format="gff"
+
+label="Plasmid Prodigal GFF files"/>
+
+
+</section>
+
+
+
+<section name="reference" title="Reference NCBI genome inputs">
+
+
+<param name="bacterial_fna"
+type="data_collection"
+collection_type="list"
+format="fasta"
+label="Reference bacterial FNA files"/>
+
+
+<param name="bacterial_gff"
+type="data_collection"
+collection_type="list"
+format="gff"
+label="Reference bacterial GFF files"/>
+
+
+<param name="plasmid_fna"
+type="data_collection"
+collection_type="list"
+format="fasta"
+
+label="Reference plasmid FNA files"/>
+
+
+<param name="plasmid_gff"
+type="data_collection"
+collection_type="list"
+format="gff"
+
+label="Reference plasmid GFF files"/>
+
+
+</section>
+
+
+
+<section name="module4_inputs" title="Files required for Module 4">
+
+    <param name="bacterial_genbank"
+           type="data_collection"
+           collection_type="list"
+           format="genbank"
+           label="Bacterial GenBank files"/>
+
+    <param name="bacterial_cds"
+           type="data_collection"
+           collection_type="list"
+           format="fasta"
+           label="Bacterial CDS files"/>
+
+    <param name="bacterial_faa"
+           type="data_collection"
+           collection_type="list"
+           format="fasta"
+           label="Bacterial Protein FASTA files"/>
+
+
+    <param name="plasmid_genbank"
+           type="data_collection"
+           collection_type="list"
+           format="genbank"
+           
+           label="Plasmid GenBank files"/>
+
+    <param name="plasmid_cds"
+           type="data_collection"
+           collection_type="list"
+           format="fasta"
+           
+           label="Plasmid CDS files"/>
+
+    <param name="plasmid_faa"
+           type="data_collection"
+           collection_type="list"
+           format="fasta"
+           
+           label="Plasmid Protein FASTA files"/>
+
+</section>
+
+
+
+<param name="threads"
+type="integer"
+value="8"
+min="1"
+max="64"
+label="Number of threads"/>
+
+
+</inputs>
+
+
+
+<outputs>
+
+<data name="module4_ready_archive"
+format="tar.gz"
+from_work_dir="module4_ready_inputs.tar.gz"
+label="Module 4-ready input archive"/>
+
+<data name="bacterial_summary"
+format="tabular"
+from_work_dir="04_results/01_final_tables/module3_bacterial_summary.tsv"
+label="Module 3 bacterial summary"/>
+
+
+<data name="plasmid_summary"
+format="tabular"
+from_work_dir="04_results/01_final_tables/module3_plasmid_summary.tsv"
+label="Module 3 plasmid summary"/>
+
+
+<data name="combined_summary"
+format="tabular"
+from_work_dir="04_results/01_final_tables/CDS_mapping_summary_NCBI_reference_vs_Prodigal_reannotation.tsv"
+label="Combined CDS mapping summary"/>
+
+
+<data name="legend"
+format="txt"
+from_work_dir="04_results/01_final_tables/module3_legend.txt"
+label="Module 3 legend"/>
+
+
+<data name="fig1"
+format="png"
+from_work_dir="04_results/02_figures/03_cds_mapping_interpretation/Figure_1A_bacterial_chromosomes_NCBI_vs_Prodigal_CDS_mapping.png"
+label="Figure 1A bacterial CDS mapping"/>
+
+
+<data name="fig2"
+format="png"
+from_work_dir="04_results/02_figures/03_cds_mapping_interpretation/Figure_1B_plasmids_NCBI_vs_Prodigal_CDS_mapping.png"
+label="Figure 1B plasmid CDS mapping"/>
+
+
+
+<data name="fig_bac_length"
+format="png"
+from_work_dir="04_results/02_figures/03_cds_mapping_interpretation/Figure_2A_bacterial_chromosomes_mean_CDS_length_change.png"
+label="Figure 2A bacterial mean CDS length change"/>
+
+<data name="fig_pls_length"
+format="png"
+from_work_dir="04_results/02_figures/03_cds_mapping_interpretation/Figure_2B_plasmids_mean_CDS_length_change.png"
+label="Figure 2B plasmid mean CDS length change"/>
+
+</outputs>
+
+
+
+<help><![CDATA[
+
+RECAP-PROK Module 3.
+
+This tool performs:
+- Liftoff mapping
+- CDS classification
+- Re-annotation comparison
+- Preparation of Module 4 input files
+
+]]></help>
+
+
+</tool>
