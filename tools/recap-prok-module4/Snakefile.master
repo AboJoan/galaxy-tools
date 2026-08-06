@@ -1,0 +1,138 @@
+import os
+
+WORK = "02_work"
+INP = "00_input"
+SCR = "03_scripts"
+RES = "04_results"
+
+TABLES = f"{RES}/01_final_tables"
+FIGDIR = f"{RES}/02_figures"
+LOGDIR = f"{RES}/00_logs"
+
+BGCFIG_DIR = f"{FIGDIR}/03_BGCs"
+FUNCCOMP_DIR = f"{FIGDIR}/02_functional_comparison"
+
+HYPO_DIR = f"{WORK}/04_hypothetical_proteins"
+NR_INPUT_DIR = f"{INP}/nr_NCBI"
+NR_TABLES = f"{TABLES}/nr_NCBI"
+NR_FIGDIR = f"{FIGDIR}/nr_NCBI"
+
+os.makedirs(TABLES, exist_ok=True)
+os.makedirs(FIGDIR, exist_ok=True)
+os.makedirs(LOGDIR, exist_ok=True)
+
+include: "Snakefile.hypothetical"
+
+FUNC_COMP_FIGS = [
+    f"{FUNCCOMP_DIR}/Hypo_Re-annotated_vs_NCBI.pdf",
+    f"{FUNCCOMP_DIR}/Hypo_Re-annotated_vs_NCBI.tiff",
+    f"{FUNCCOMP_DIR}/Pls_Hypo_Re-annotation_vs_NCBI.pdf",
+    f"{FUNCCOMP_DIR}/Pls_Hypo_Re-annotation_vs_NCBI.tiff",
+]
+
+rule master_all:
+    input:
+        f"{WORK}/.ready",
+
+        f"{TABLES}/01_Bacterial_genome_functional_summary_table.tsv",
+        f"{TABLES}/02_Plasmid_sequences_functional_summary_table.tsv",
+
+        
+        f"{TABLES}/04_01_genbank_hypothetical_comparison.tsv",
+        f"{TABLES}/04_01_genbank_hypothetical_comparison.csv",
+        f"{TABLES}/05_01_genbank_pls_hypothetical_comparison.tsv",
+        f"{TABLES}/05_01_genbank_pls_hypothetical_comparison.csv",
+
+        FUNC_COMP_FIGS,
+
+        BAC_GBS,
+        PLS_GBS,
+        PUT_GBS,
+
+        f"{HYPO_DIR}/reannotated_bacterial_hypothetical_proteins.faa",
+        f"{HYPO_DIR}/reference_bacterial_hypothetical_proteins.faa",
+        f"{HYPO_DIR}/reannotated_plasmid_hypothetical_proteins.faa",
+        f"{HYPO_DIR}/reference_plasmid_hypothetical_proteins.faa",
+        f"{TABLES}/06_01_hypothetical_proteins_extracted_for_nrNCBI.tsv",
+
+
+rule prepare_dirs_master:
+    output:
+        touch(f"{WORK}/.ready")
+    shell:
+        r"""
+        set -euo pipefail
+        mkdir -p "{WORK}" "{TABLES}" "{LOGDIR}"
+        mkdir -p "{BGCFIG_DIR}" "{FUNCCOMP_DIR}"
+        mkdir -p "{HYPO_DIR}" "{NR_INPUT_DIR}" "{NR_TABLES}" "{NR_FIGDIR}"
+        touch "{output}"
+        """
+
+ruleorder: prepare_dirs_master > master_all
+
+rule functional_bacterial_master:
+    input:
+        f"{WORK}/.ready"
+    output:
+        out=f"{TABLES}/01_Bacterial_genome_functional_summary_table.tsv"
+    log:
+        f"{LOGDIR}/01_bacterial_functional.log"
+    shell:
+        r"""
+        set -euo pipefail
+        bash "{SCR}/01_eggNOG-mapper/01_bacterial_build_functional_summary_bac_table.sh" > "{log}" 2>&1
+        test -s "{output.out}"
+        """
+
+rule functional_plasmid_master:
+    input:
+        f"{WORK}/.ready"
+    output:
+        out=f"{TABLES}/02_Plasmid_sequences_functional_summary_table.tsv"
+    log:
+        f"{LOGDIR}/02_plasmid_functional.log"
+    shell:
+        r"""
+        set -euo pipefail
+        bash "{SCR}/01_eggNOG-mapper/02_plasmid_build_functional_summary_pls_table.sh" > "{log}" 2>&1
+        test -s "{output.out}"
+        """
+
+rule extract_hypothetical_proteins_for_nrNCBI:
+    input:
+        bac_table=f"{TABLES}/04_01_genbank_hypothetical_comparison.tsv",
+        pls_table=f"{TABLES}/05_01_genbank_pls_hypothetical_comparison.tsv"
+    output:
+        reann_bac=f"{HYPO_DIR}/reannotated_bacterial_hypothetical_proteins.faa",
+        ref_bac=f"{HYPO_DIR}/reference_bacterial_hypothetical_proteins.faa",
+        reann_pls=f"{HYPO_DIR}/reannotated_plasmid_hypothetical_proteins.faa",
+        ref_pls=f"{HYPO_DIR}/reference_plasmid_hypothetical_proteins.faa",
+        table=f"{TABLES}/06_01_hypothetical_proteins_extracted_for_nrNCBI.tsv"
+    params:
+        reann_bac_dir=f"{INP}/04_hypothetical_genes/01_Re-annotated_bacterial_genbank",
+        ref_bac_dir=f"{INP}/04_hypothetical_genes/02_Reference_bacterial_genbank",
+        reann_pls_dir=f"{INP}/04_hypothetical_genes/03_Re-annotated_plasmids_genbank",
+        ref_pls_dir=f"{INP}/04_hypothetical_genes/04_Reference_plasmids_genbank"
+    log:
+        f"{LOGDIR}/18_extract_hypothetical_proteins_for_nrNCBI.log"
+    shell:
+        r"""
+        set -euo pipefail
+        python3 "{SCR}/06_nr_NCBI/01_extract_hypothetical_from_gbk.py" \
+          --reann_bac_dir "{params.reann_bac_dir}" \
+          --ref_bac_dir "{params.ref_bac_dir}" \
+          --reann_pls_dir "{params.reann_pls_dir}" \
+          --ref_pls_dir "{params.ref_pls_dir}" \
+          --out_reann_bac "{output.reann_bac}" \
+          --out_ref_bac "{output.ref_bac}" \
+          --out_reann_pls "{output.reann_pls}" \
+          --out_ref_pls "{output.ref_pls}" \
+          --out_table "{output.table}" \
+          > "{log}" 2>&1
+
+        test -f "{output.reann_bac}"
+        test -f "{output.ref_bac}"
+        test -f "{output.reann_pls}"
+        test -f "{output.ref_pls}"
+        test -s "{output.table}"
+        """
