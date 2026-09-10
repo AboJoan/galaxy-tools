@@ -1,5 +1,9 @@
-<tool id="recap_prok_module3" name="RECAP-PROK Module 3" version="0.2.0" profile="23.0">
+<tool id="recap_prok_module3" name="RECAP-PROK CDS Comparison" version="0.2.0" profile="23.0">
     <description>CDS comparison between Liftoff-mapped reference annotation and Prodigal re-annotation</description>
+    <creator>
+        <person givenName="Asaad" familyName="Ataa" identifier="https://orcid.org/0000-0002-0399-0615"/>
+        <organization name="Department Computational Biology and Chemistry (COMPBC), Helmholtz Centre for Environmental Research (UFZ)"/>
+    </creator>
     <requirements>
         <requirement type="package" version="2.31.1">bedtools</requirement>
         <requirement type="package" version="9.5">coreutils</requirement>
@@ -23,13 +27,13 @@ cp outdir/FINAL_Re-annotated_CDS/galaxy_sample_FINAL_CDS.gff '$final_cds_gff'
     <inputs>
         <param name="input_mapped" type="data" format="gff,gff3" label="Liftoff-mapped reference GFF" help="Reference CDS annotation already mapped to the target genome coordinates, for example output produced by Liftoff in Galaxy."/>
         <param name="input_prodigal" type="data" format="gff,gff3" label="Prodigal re-annotation GFF" help="Prodigal-based CDS annotation for the same bacterial chromosome or plasmid sequence."/>
-        <param name="reciprocal_overlap" type="float" value="0.80" min="0.0" max="1.0" label="Minimum reciprocal CDS overlap" help="Default: 0.80, matching the original RECAP-PROK Module 3 analysis."/>
+        <param name="reciprocal_overlap" type="float" value="0.80" min="0.0" max="1.0" label="Minimum reciprocal CDS overlap" help="Default: 0.80, matching the RECAP-PROK CDS comparison analysis."/>
     </inputs>
     <outputs>
-        <data name="wide_table" format="tabular" label="${tool.name}: CDS comparison summary"/>
-        <data name="pairs_classified" format="tabular" label="${tool.name}: classified CDS pairs"/>
-        <data name="final_cds_ids" format="tabular" label="${tool.name}: final CDS evidence IDs"/>
-        <data name="final_cds_gff" format="gff3" label="${tool.name}: final CDS evidence GFF"/>
+        <data name="wide_table" format="tabular" label="${tool.name} on ${on_string}: CDS comparison summary"/>
+        <data name="pairs_classified" format="tabular" label="${tool.name} on ${on_string}: classified CDS pairs"/>
+        <data name="final_cds_ids" format="tabular" label="${tool.name} on ${on_string}: final CDS evidence IDs"/>
+        <data name="final_cds_gff" format="gff3" label="${tool.name} on ${on_string}: final CDS evidence GFF"/>
     </outputs>
     <tests>
         <!-- Test 1: bacterial chromosome -->
@@ -86,7 +90,7 @@ cp outdir/FINAL_Re-annotated_CDS/galaxy_sample_FINAL_CDS.gff '$final_cds_gff'
         </test>
     </tests>
     <help><![CDATA[
-RECAP-PROK Module 3 compares a Liftoff-mapped reference CDS annotation with a
+RECAP-PROK CDS Comparison compares a Liftoff-mapped reference CDS annotation with a
 Prodigal-based re-annotation of the same sequence.
 
 INPUTS
@@ -103,11 +107,11 @@ Galaxy supplies the selected datasets directly to the tool.
 
 ANALYSIS
 
-The scientific CDS classification logic is implemented in
-module3_table3_columns.sh.
+CDS features from the Liftoff-mapped reference annotation and the Prodigal
+re-annotation are compared using reciprocal genomic overlap.
 
 The default minimum reciprocal CDS overlap is 0.80, corresponding to the
-original RECAP-PROK Module 3 analysis.
+RECAP-PROK CDS comparison analysis.
 
 The same analysis is applicable to bacterial chromosomes and plasmids.
 Separate bacterial and plasmid implementations are therefore not required.
@@ -127,10 +131,17 @@ Liftoff is intentionally treated as a separate Galaxy tool/workflow step.
 The Liftoff-mapped reference annotation can be passed directly to this tool
 together with the corresponding Prodigal annotation.
 
-This design allows Module 3 to be incorporated into a larger Galaxy workflow
-without duplicating the Liftoff implementation inside this wrapper.
-    ]]></help>
+This design allows RECAP-PROK CDS Comparison to be incorporated into a larger
+Galaxy workflow without duplicating the Liftoff implementation inside this tool.
+]]></help>
     <citations>
-        <citation type="doi">10.1093/bioinformatics/btaa1016</citation>
+        <citation type="bibtex"><![CDATA[
+@software{recap_prok,
+  author = {Ataa, Asaad},
+  title = {RECAP-PROK},
+  url = {https://github.com/AboJoan/RECAP-PROK},
+  year = {2026}
+}
+    ]]></citation>
     </citations>
 </tool>
