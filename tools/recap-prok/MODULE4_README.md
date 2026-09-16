@@ -38,7 +38,7 @@ interpretation logic.
    - output:
      - Re-annotated GenBank
    - packaged RECAP-PROK resource:
-     - `resources/pfam_duf_map.tsv`
+     - `resources/pfam_duf_map.tsv.gz`
 
 3. `recap_prok_module4_hypothetical_comparison.xml`
    - inputs:
@@ -103,7 +103,7 @@ this Galaxy-native Module 4 workflow.
 
 ## Resources
 
-`resources/pfam_duf_map.tsv` is the RECAP-PROK resource used by GenBank
+`resources/pfam_duf_map.tsv.gz` is the RECAP-PROK resource used by GenBank
 Reconstruction.
 
 `kegg_pathway_titles.tsv` is not required by the current Module 4 wrappers and

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import gzip
 import re
 from collections import OrderedDict
 from datetime import datetime
@@ -12,18 +13,22 @@ from Bio.SeqRecord import SeqRecord
 
 EMPTY = {"", "na", "none", "-", "nan"}
 
+
 def norm_empty(value):
     if value is None:
         return ""
     value = str(value).strip()
     return "" if value.lower() in EMPTY else value
 
+
 def strip_version(accession):
     return re.sub(r"\.\d+$", "", accession.strip())
+
 
 def parse_tsv(path):
     with open(path, newline="", encoding="utf-8", errors="replace") as handle:
         return list(csv.DictReader(handle, delimiter="\t"))
+
 
 def find_metadata_row(rows, key):
     query = norm_empty(key)
@@ -45,6 +50,7 @@ def find_metadata_row(rows, key):
         "Replicon_accession_norm, Genome_ID, or Inf."
     )
 
+
 def sniff_delimiter(path):
     with open(path, encoding="utf-8", errors="replace") as handle:
         for line in handle:
@@ -52,6 +58,7 @@ def sniff_delimiter(path):
                 continue
             return "\t" if "\t" in line else ","
     return "\t"
+
 
 def load_eggnog(path):
     delimiter = sniff_delimiter(path)
@@ -82,8 +89,10 @@ def load_eggnog(path):
             }
     return mapping
 
+
 def read_fasta(path):
     return OrderedDict((record.id, record) for record in SeqIO.parse(path, "fasta"))
+
 
 def parse_prodigal_faa(path):
     proteins = {}
@@ -94,6 +103,7 @@ def parse_prodigal_faa(path):
         if match:
             gff_to_protein[match.group(1)] = record.id
     return proteins, gff_to_protein
+
 
 def parse_gff_cds(path):
     with open(path, encoding="utf-8", errors="replace") as handle:
@@ -127,6 +137,7 @@ def parse_gff_cds(path):
                 "gff_id": feature_id,
             }
 
+
 UNKNOWN_RE = re.compile(
     r"\b(unknown function|function unknown|uncharacteri[sz]ed|hypothetical)\b",
     flags=re.I,
@@ -138,32 +149,74 @@ BAD_PRODUCT_RE = re.compile(
     flags=re.I,
 )
 
+
 def load_pfam_duf_map(path):
     if not path:
         return {}
+
     p = Path(path)
     if not p.exists() or p.stat().st_size == 0:
         return {}
-    with p.open(newline="", encoding="utf-8", errors="replace") as handle:
+
+    opener = gzip.open if p.suffix == ".gz" else open
+
+    with opener(
+        p,
+        mode="rt",
+        newline="",
+        encoding="utf-8",
+        errors="replace",
+    ) as handle:
         reader = csv.DictReader(handle, delimiter="\t")
         fields = [f.strip() for f in (reader.fieldnames or [])]
-        id_cols = [f for f in fields if f.lower() in {
-            "pfam", "pfam_id", "id", "name", "accession", "acc", "pfam_acc"
-        }]
-        desc_cols = [f for f in fields if f.lower() in {
-            "desc", "description", "pfam_desc"
-        }]
+        id_cols = [
+            f
+            for f in fields
+            if f.lower()
+            in {
+                "pfam",
+                "pfam_id",
+                "id",
+                "name",
+                "accession",
+                "acc",
+                "pfam_acc",
+            }
+        ]
+        desc_cols = [
+            f
+            for f in fields
+            if f.lower() in {"desc", "description", "pfam_desc"}
+        ]
+
         mapping = {}
         for row in reader:
-            ident = next((norm_empty(row.get(c)) for c in id_cols if norm_empty(row.get(c))), "")
-            desc = next((norm_empty(row.get(c)) for c in desc_cols if norm_empty(row.get(c))), "")
+            ident = next(
+                (
+                    norm_empty(row.get(c))
+                    for c in id_cols
+                    if norm_empty(row.get(c))
+                ),
+                "",
+            )
+            desc = next(
+                (
+                    norm_empty(row.get(c))
+                    for c in desc_cols
+                    if norm_empty(row.get(c))
+                ),
+                "",
+            )
             if ident:
                 mapping[ident.upper()] = desc
+
         return mapping
+
 
 def split_tokens(value):
     value = norm_empty(value)
     return [x for x in re.split(r"[,\s;|]+", value) if x] if value else []
+
 
 def build_note(annotation):
     parts = []
@@ -182,14 +235,17 @@ def build_note(annotation):
             parts.append(f"{label}={value}")
     return "; ".join(parts) if parts else None
 
+
 def only_cog_s(note):
     compact = re.sub(r"\s+", "", note or "")
     return compact.strip(";") == "COG=S"
+
 
 def duf_only_unknown(pfam_field, mapping):
     tokens = split_tokens(pfam_field)
     if not tokens:
         return False
+
     def is_duf(token):
         token = token.upper()
         if token.startswith("DUF"):
@@ -203,12 +259,14 @@ def duf_only_unknown(pfam_field, mapping):
             return True
     return False
 
+
 def choose_product(annotation):
     for value in (annotation.get("Preferred_name"), annotation.get("Description")):
         value = norm_empty(value)
         if value and not BAD_PRODUCT_RE.search(value):
             return value if len(value) <= 200 else value[:197] + "..."
     return "putative protein"
+
 
 def decide_product_and_note(annotation, pfam_map):
     note = build_note(annotation)
@@ -229,9 +287,11 @@ def decide_product_and_note(annotation, pfam_map):
         return choose_product(annotation), note
     return "hypothetical protein", note
 
+
 def taxonomy_from_metadata(metadata):
     ranks = ["Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
     return [norm_empty(metadata.get(rank)) for rank in ranks if norm_empty(metadata.get(rank))]
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -350,6 +410,7 @@ def main():
 
     with open(args.out, "w", encoding="utf-8") as handle:
         SeqIO.write(list(records.values()), handle, "genbank")
+
 
 if __name__ == "__main__":
     main()

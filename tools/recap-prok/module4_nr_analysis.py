@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import csv
-import re
-from collections import Counter, defaultdict
+from collections import Counter
+
 import matplotlib.pyplot as plt
 
 COLUMNS = ["qseqid", "sseqid", "pident", "qlen", "slen", "length", "evalue", "bitscore", "stitle"]
@@ -16,6 +16,7 @@ PUTATIVE = [
     "tigr", "y-family", "conserved protein",
 ]
 
+
 def classify(title):
     t = (title or "").lower()
     if any(x in t for x in STRICT):
@@ -23,6 +24,7 @@ def classify(title):
     if any(x in t for x in PUTATIVE):
         return "Putative functional evidence"
     return "Clear functional annotation"
+
 
 def read_raw(path):
     rows = []
@@ -42,6 +44,7 @@ def read_raw(path):
             rows.append(d)
     return rows
 
+
 def best_hits(rows):
     best = {}
     for row in rows:
@@ -51,14 +54,16 @@ def best_hits(rows):
             best[q] = row
     return list(best.values())
 
+
 def summarize(rows):
     c = Counter(r["nr_class"] for r in rows)
     total = len(rows)
     result = []
     for cls in ["Strict hypothetical/unclassified", "Putative functional evidence", "Clear functional annotation"]:
         n = c.get(cls, 0)
-        result.append((cls, n, (n/total*100 if total else 0)))
+        result.append((cls, n, (n / total * 100 if total else 0)))
     return result
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -97,7 +102,7 @@ def main():
     fig, ax = plt.subplots(figsize=(9, 5))
     for i, (label, rows) in enumerate(datasets):
         sm = dict((cls, pct) for cls, _, pct in summarize(rows))
-        xs = [v + (i-0.5)*width for v in x]
+        xs = [v + (i - 0.5) * width for v in x]
         ax.bar(xs, [sm.get(c, 0) for c in classes], width=width, label=label)
     ax.set_xticks(list(x))
     ax.set_xticklabels(["Strict hypothetical", "Putative functional", "Clear functional"], rotation=20, ha="right")
@@ -107,6 +112,7 @@ def main():
     fig.tight_layout()
     fig.savefig(args.out_pdf, format="pdf")
     plt.close(fig)
+
 
 if __name__ == "__main__":
     main()

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import csv
 import json
 import re
-import csv
+
 import matplotlib.pyplot as plt
+
 
 def extract_recorddata(path):
     with open(path, encoding="utf-8", errors="replace") as fh:
@@ -27,16 +29,25 @@ def extract_recorddata(path):
 
     return data
 
+
 def classify(prod):
     p = (prod or "").lower()
-    if "nrps" in p: return "NRPS"
-    if any(x in p for x in ("t1pks", "t2pks", "t3pks", "pks")): return "PKS"
-    if "ripp" in p: return "RiPP"
-    if "terpene" in p: return "Terpene"
-    if "phosphonate" in p: return "Phosphonate"
-    if "autoinducer" in p or "auto-inducer" in p: return "Auto-inducer"
-    if "deazapurine" in p: return "Deazapurine"
+    if "nrps" in p:
+        return "NRPS"
+    if any(x in p for x in ("t1pks", "t2pks", "t3pks", "pks")):
+        return "PKS"
+    if "ripp" in p:
+        return "RiPP"
+    if "terpene" in p:
+        return "Terpene"
+    if "phosphonate" in p:
+        return "Phosphonate"
+    if "autoinducer" in p or "auto-inducer" in p:
+        return "Auto-inducer"
+    if "deazapurine" in p:
+        return "Deazapurine"
     return "Other"
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -62,13 +73,14 @@ def main():
 
     classes = sorted(counts)
     values = [counts[c] for c in classes]
-    fig, ax = plt.subplots(figsize=(8, max(4, 0.45*len(classes))))
+    fig, ax = plt.subplots(figsize=(8, max(4, 0.45 * len(classes))))
     ax.barh(classes, values)
     ax.set_xlabel("Number of BGCs")
     ax.set_title("antiSMASH BGC classes")
     fig.tight_layout()
     fig.savefig(args.out_pdf, format="pdf")
     plt.close(fig)
+
 
 if __name__ == "__main__":
     main()

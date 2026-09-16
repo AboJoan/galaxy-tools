@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import csv
-from pathlib import Path
-from Bio import SeqIO
+
 import matplotlib.pyplot as plt
+from Bio import SeqIO
 
 TERMS = [
     "hypothetical protein",
@@ -14,9 +14,11 @@ TERMS = [
     "putative uncharacterized",
 ]
 
+
 def is_hypothetical(product):
     p = (product or "").lower()
     return any(t in p for t in TERMS)
+
 
 def analyze(path, dataset, out_faa):
     total = hypo = 0
@@ -44,6 +46,7 @@ def analyze(path, dataset, out_faa):
                 rows.append([dataset, record.id, locus, protein_id, product, header])
     return total, hypo, rows
 
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reann-gb", required=True)
@@ -66,7 +69,7 @@ def main():
             ("Reference-mapped", f_total, f_hypo),
         ]:
             pct = (hypo / total * 100) if total else 0
-            w.writerow([label, total, hypo, f"{pct:.2f}", total-hypo])
+            w.writerow([label, total, hypo, f"{pct:.2f}", total - hypo])
 
     labels = ["Reference-mapped", "Re-annotated"]
     vals = [
@@ -79,10 +82,11 @@ def main():
     ax.set_ylim(0, 100)
     ax.set_title("Hypothetical proteins: Re-annotated vs Reference-mapped")
     for bar, val in zip(bars, vals):
-        ax.text(bar.get_x()+bar.get_width()/2, val+1, f"{val:.1f}%", ha="center")
+        ax.text(bar.get_x() + bar.get_width() / 2, val + 1, f"{val:.1f}%", ha="center")
     fig.tight_layout()
     fig.savefig(args.out_pdf, format="pdf")
     plt.close(fig)
+
 
 if __name__ == "__main__":
     main()
