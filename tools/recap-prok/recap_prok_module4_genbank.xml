@@ -1,0 +1,82 @@
+<tool id="recap_prok_module4_genbank" name="RECAP-PROK GenBank Reconstruction" version="0.1.0" profile="23.0">
+    <description>build a re-annotated GenBank file from Prodigal and eggNOG-mapper results</description>
+    <requirements>
+        <requirement type="package" version="3.12">python</requirement>
+        <requirement type="package" version="1.84">biopython</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+python '$__tool_directory__/module4_build_genbank.py'
+  --metadata '$metadata'
+  --metadata-key '$metadata_key'
+  --fna '$prodigal_fna'
+  --faa '$prodigal_faa'
+  --gff '$prodigal_gff'
+  --eggnog '$eggnog_annotations'
+  --pfam-duf-map '$__tool_directory__/resources/pfam_duf_map.tsv'
+  --topology '$topology'
+  --transl-table '$translation_table'
+  #if str($locus_prefix).strip()
+  --locus-prefix '$locus_prefix'
+  #end if
+  #if str($taxon_id).strip()
+  --taxon '$taxon_id'
+  #end if
+  --out '$output_genbank'
+    ]]></command>
+    <inputs>
+        <param name="eggnog_annotations" type="data" format="tabular" label="Re-annotated eggNOG-mapper annotations"/>
+        <param name="metadata" type="data" format="tabular" label="RECAP-PROK replicon metadata"/>
+        <param name="metadata_key" type="text" label="Metadata record identifier" help="Replicon_accession, Genome_ID, or Inf value identifying this replicon.">
+            <validator type="empty_field"/>
+        </param>
+        <param name="prodigal_fna" type="data" format="fasta" label="Prodigal nucleotide FASTA"/>
+        <param name="prodigal_faa" type="data" format="fasta" label="Prodigal protein FASTA"/>
+        <param name="prodigal_gff" type="data" format="gff,gff3" label="Prodigal GFF"/>
+        <param name="topology" type="select" label="Replicon topology">
+            <option value="circular" selected="true">Circular</option>
+            <option value="linear">Linear</option>
+        </param>
+        <param name="translation_table" type="integer" value="11" min="1" label="NCBI translation table"/>
+        <param name="locus_prefix" type="text" optional="true" label="Locus tag prefix"/>
+        <param name="taxon_id" type="integer" optional="true" min="1" label="NCBI taxonomy ID"/>
+    </inputs>
+    <outputs>
+        <data name="output_genbank" format="genbank" label="${tool.name} on ${on_string}: reconstructed GenBank"/>
+    </outputs>
+    <tests>
+        <test>
+            <param name="eggnog_annotations" value="eggNOG_Mapper_on_dataset_1__annotations_37.tabular.tabular"/>
+            <param name="metadata" value="03_replicon_metadata.tsv"/>
+            <param name="metadata_key" value="BASIHUMIx_08"/>
+            <param name="prodigal_fna" value="Re-annotated_08.fna"/>
+            <param name="prodigal_faa" value="Re-annotated_08.proteins.faa"/>
+            <param name="prodigal_gff" value="Re-annotated_08.prodigal.gff"/>
+            <param name="topology" value="circular"/>
+            <param name="translation_table" value="11"/>
+            <output name="output_genbank">
+                <assert_contents>
+                    <has_text text="LOCUS"/>
+                    <has_text text="Bifidobacterium"/>
+                    <has_text text="FEATURES"/>
+                    <has_text text="CDS"/>
+                    <has_text text="ORIGIN"/>
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+    <help><![CDATA[
+Builds a re-annotated GenBank file from Prodigal outputs, Galaxy eggNOG-mapper
+annotations, and RECAP-PROK metadata. The tool is replicon-generic and does not
+require bacterial/plasmid-specific filenames.
+    ]]></help>
+    <citations>
+        <citation type="bibtex"><![CDATA[
+@software{recap_prok,
+  author = {Ataa, Asaad},
+  title = {RECAP-PROK},
+  url = {https://github.com/AboJoan/RECAP-PROK},
+  year = {2026}
+}
+    ]]></citation>
+    </citations>
+</tool>
