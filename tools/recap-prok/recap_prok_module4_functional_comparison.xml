@@ -1,10 +1,9 @@
 <tool id="recap_prok_module4_functional_comparison" name="RECAP-PROK Functional Annotation Comparison" version="0.1.0" profile="25.1">
     <description>compare multi-layer functional annotations between re-annotated and reference-mapped proteins</description>
-    <requirements>
-        <requirement type="package" version="3.12">python</requirement>
-        <requirement type="package" version="1.84">biopython</requirement>
-        <requirement type="package" version="3.9.2">matplotlib</requirement>
-    </requirements>
+    <macros>
+        <import>macros_module4.xml</import>
+    </macros>
+    <expand macro="module4_requirements"/>
     <command detect_errors="exit_code"><![CDATA[
 python '$__tool_directory__/module4_functional_comparison.py'
     --reann-eggnog '$reann_eggnog'

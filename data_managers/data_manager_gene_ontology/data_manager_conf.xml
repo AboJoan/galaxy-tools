@@ -5,6 +5,7 @@
                 <column name="value"/>
                 <column name="name"/>
                 <column name="version"/>
+                <column name="files"/>
                 <column name="path" output_ref="out_file">
                     <move type="directory">
                         <source>${path}</source>

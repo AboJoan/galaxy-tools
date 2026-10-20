@@ -1,10 +1,9 @@
 <tool id="recap_prok_module4_genbank" name="RECAP-PROK GenBank Reconstruction" version="0.1.0" profile="25.1">
     <description>build a re-annotated GenBank file from Prodigal and eggNOG-mapper results</description>
-    <requirements>
-        <requirement type="package" version="3.12">python</requirement>
-        <requirement type="package" version="1.84">biopython</requirement>
-        <requirement type="package" version="3.9.2">matplotlib</requirement>
-    </requirements>
+    <macros>
+        <import>macros_module4.xml</import>
+    </macros>
+    <expand macro="module4_requirements"/>
     <command detect_errors="exit_code"><![CDATA[
 python '$__tool_directory__/module4_build_genbank.py'
   --metadata '$metadata'
