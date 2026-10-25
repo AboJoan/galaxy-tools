@@ -32,6 +32,7 @@ python '$__tool_directory__/module4_build_genbank.py'
         <param name="metadata" type="data" format="tabular" label="RECAP-PROK replicon metadata"/>
         <param name="metadata_key" type="text" label="Metadata record identifier" help="Replicon_accession, Genome_ID, or Inf value identifying this replicon.">
             <validator type="empty_field"/>
+            <validator type="regex" message="Use only letters, numbers, underscores, periods, and hyphens.">^[A-Za-z0-9_.-]+$</validator>
         </param>
         <param name="prodigal_fna" type="data" format="fasta" label="Prodigal nucleotide FASTA"/>
         <param name="prodigal_faa" type="data" format="fasta" label="Prodigal protein FASTA"/>
