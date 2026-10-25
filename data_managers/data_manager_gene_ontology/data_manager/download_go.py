@@ -58,7 +58,7 @@ def main(output_dir, output_json, base_url=BASE_URL):
                 "name": f"Gene Ontology {version}",
                 "version": version,
                 "value": f"go-{version}",
-                "files": ",".join(FILES),
+                "file": ",".join(FILES),
             }]
         }
     }
