@@ -23,6 +23,7 @@ python '$__tool_directory__/module4_functional_comparison.py'
         <param name="ref_faa" type="data" format="fasta" label="Reference-mapped protein FASTA" help="Protein FASTA corresponding to the reference-mapped eggNOG-mapper annotations."/>
         <param name="go_database" type="select" label="Gene Ontology database">
             <options from_data_table="gene_ontology">
+                <filter type="static_value" column="file" value="go-basic.obo"/>
                 <validator type="no_options" message="No Gene Ontology reference data available. Contact your Galaxy admin."/>
             </options>
         </param>

@@ -20,10 +20,11 @@ Downloads nine official Gene Ontology reference files in OBO, OWL,
 JSON, and OFN formats.
 
 The release version is extracted from the downloaded ``go-basic.obo`` file.
-The data table records the release version and available filenames.
+The data table contains one entry per downloaded Gene Ontology file,
+including its release version and filename.
 
-The ``path`` column points to ``go-basic.obo`` for compatibility with
-RECAP-PROK Module 4 Functional Comparison.
+Each entry's ``path`` column resolves to the corresponding file.
+RECAP-PROK Module 4 Functional Comparison uses ``go-basic.obo``.
     ]]></help>
     <citations>
         <citation type="bibtex"><![CDATA[

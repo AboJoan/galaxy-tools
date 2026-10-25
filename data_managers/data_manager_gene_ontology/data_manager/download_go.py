@@ -53,13 +53,16 @@ def main(output_dir, output_json, base_url=BASE_URL):
 
     data = {
         "data_tables": {
-            "gene_ontology": [{
-                "path": "go/",
-                "name": f"Gene Ontology {version}",
-                "version": version,
-                "value": f"go-{version}",
-                "file": ",".join(FILES),
-            }]
+            "gene_ontology": [
+                {
+                    "path": "go/",
+                    "name": f"Gene Ontology {version} {filename}",
+                    "version": version,
+                    "value": f"go-{version}-{filename}",
+                    "file": filename,
+                }
+                for filename in FILES
+            ]
         }
     }
 
