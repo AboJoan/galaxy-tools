@@ -103,14 +103,5 @@ Builds a re-annotated GenBank file from Prodigal outputs, Galaxy eggNOG-mapper
 annotations, and RECAP-PROK metadata. The tool is replicon-generic and does not
 require bacterial/plasmid-specific filenames.
     ]]></help>
-    <citations>
-        <citation type="bibtex"><![CDATA[
-@software{recap_prok,
-  author = {Ataa, Asaad},
-  title = {RECAP-PROK},
-  url = {https://github.com/AboJoan/RECAP-PROK},
-  year = {2026}
-}
-    ]]></citation>
-    </citations>
+    <expand macro="module4_citations"/>
 </tool>

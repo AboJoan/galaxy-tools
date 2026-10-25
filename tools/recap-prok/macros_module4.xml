@@ -6,4 +6,16 @@
             <requirement type="package" version="3.9.2">matplotlib</requirement>
         </requirements>
     </xml>
+    <xml name="module4_citations">
+        <citations>
+            <citation type="bibtex"><![CDATA[
+@software{recap_prok,
+  author = {Ataa, Asaad},
+  title = {RECAP-PROK},
+  url = {https://github.com/AboJoan/RECAP-PROK},
+  year = {2026}
+}
+            ]]></citation>
+        </citations>
+    </xml>
 </macros>

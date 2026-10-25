@@ -59,14 +59,5 @@ Compares hypothetical-protein content between the re-annotated and reference-map
 GenBank files. The two FASTA outputs are intended as query inputs to Galaxy DIAMOND
 against NCBI NR.
     ]]></help>
-    <citations>
-        <citation type="bibtex"><![CDATA[
-@software{recap_prok,
-  author = {Ataa, Asaad},
-  title = {RECAP-PROK},
-  url = {https://github.com/AboJoan/RECAP-PROK},
-  year = {2026}
-}
-    ]]></citation>
-    </citations>
+    <expand macro="module4_citations"/>
 </tool>
