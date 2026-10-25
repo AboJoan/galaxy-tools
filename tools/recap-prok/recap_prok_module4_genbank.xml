@@ -4,6 +4,10 @@
         <import>macros_module4.xml</import>
     </macros>
     <expand macro="module4_requirements"/>
+    <required_files>
+        <include path="module4_build_genbank.py"/>
+        <include path="resources/pfam_duf_map.tsv.gz"/>
+    </required_files>
     <command detect_errors="exit_code"><![CDATA[
 python '$__tool_directory__/module4_build_genbank.py'
   --metadata '$metadata'
